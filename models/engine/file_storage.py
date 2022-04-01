@@ -32,7 +32,14 @@ class FileStorage:
             json.dump(temp, f)
 
     def reload(self):
-        """Loads storage dictionary from file"""
+        """Deserialize from `__file_path` to `__objects`
+
+        Args:
+            self (object): <class '__main__.FileStorage'> instance
+
+        Returns:
+            None
+        """
         from models.base_model import BaseModel
         from models.user import User
         from models.place import Place
@@ -70,3 +77,7 @@ class FileStorage:
             key = obj.__class__.__name__ + "." + obj.id
             self.__class__.__objects.pop(key, None)
         return None
+
+    def close(self):
+        """Method for deserializing the JSON file to objects"""
+        self.reload()
