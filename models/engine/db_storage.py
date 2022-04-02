@@ -5,6 +5,24 @@ from sqlalchemy.engine.create import create_engine
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import sessionmaker
 
+from models.amenity import Amenity
+from models.base_model import Base
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
+
+
+classes = {
+    "Amenity": Amenity,
+    "City": City,
+    "Plage": Place,
+    "Review": Review,
+    "State": State,
+    "User": User
+}
+
 
 class DBStorage:
     """This class manages storage of hbnb models in MySQL Database."""
@@ -31,14 +49,6 @@ class DBStorage:
             ), pool_pre_ping=True
         )
         if getenv("HBNB_ENV") == "test":
-            from models.amenity import Amenity
-            from models.city import City
-            from models.place import Place
-            from models.review import Review
-            from models.state import State
-            from models.user import User
-            from models.base_model import Base
-
             Base.metadata.drop_all(bind=self.__engine)
         return None
 
@@ -53,20 +63,14 @@ class DBStorage:
             cls (class, optional): Mapped class to query from
 
         Returns:
-            None
+            dictionary
         """
         dictionary = {}
         if cls:
             for obj in self.__session.query(cls).all():
                 dictionary[type(obj).__name__ + '.' + obj.id] = obj
         else:
-            from models.amenity import Amenity
-            from models.city import City
-            from models.place import Place
-            from models.review import Review
-            from models.state import State
-            from models.user import User
-            for clss in [City, State, Place, User]:
+            for clss in classes.values():
                 for obj in self.__session.query(clss).all():
                     dictionary[type(obj).__name__ + '.' + obj.id] = obj
         return dictionary
@@ -119,17 +123,12 @@ class DBStorage:
         Returns:
             None
         """
-        from models.amenity import Amenity
-        from models.base_model import Base
-        from models.city import City
-        from models.place import Place
-        from models.review import Review
-        from models.state import State
-        from models.user import User
-
         Base.metadata.create_all(self.__engine)
 
-        session_factory = sessionmaker(bind=self.__engine)
+        session_factory = sessionmaker(
+            bind=self.__engine,
+            expire_on_commit=False
+        )
         Session = scoped_session(session_factory)
         self.__session = Session
 
