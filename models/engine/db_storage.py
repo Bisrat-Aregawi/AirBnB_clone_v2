@@ -134,4 +134,4 @@ class DBStorage:
 
     def close(self):
         """Session closer method to initiate a fresh one"""
-        self.__session.remove()
+        self.__session.close()

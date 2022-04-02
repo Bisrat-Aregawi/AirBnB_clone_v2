@@ -1,7 +1,8 @@
 __pycache__/
+versions/
 file.json
 .print.py
 test_params_create
 main_delete.py
 main_place_amenities.py
-versions/
+main_*.py
